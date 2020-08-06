@@ -1,5 +1,6 @@
 {
-    "python.pythonPath": "C:\\Users\\shaya\\.virtualenvs\\racing-bet-sKLMuaxW\\Scripts\\python.exe",
+    "python.pythonPath": "C:\\Users\\shaya\\.virtualenvs\\project-turtle-shell-ybWqZaH7\\Scripts\\python.exe",
     "python.linting.pylintEnabled": true,
-    "python.linting.enabled": true
+    "python.linting.enabled": true,
+    "python.formatting.provider": "black"
 }

@@ -20,8 +20,9 @@ style.configure('W.TButton', font =
                 foreground = 'white', background = '#336B87', borderwidth = '1')
 style.map('W.TButton', background=[('active','#336B87')])                 
 
+racerWindow = EnterRacer()
 # enter new racer
-btnNewRacer = Button(app, text = "Enter New Racer", style = 'W.TButton', command = EnterRacer)
+btnNewRacer = Button(app, text = "Enter New Racer", style = 'W.TButton', command = racerWindow.EnterRacerWindow)
 btnNewRacer.grid(row = 0, column = 0, pady = 50, padx = 50)
 
 # enter racer statistics
