@@ -44,6 +44,20 @@ class EnterRacer:
             self.tv.insert("", "end", text="0", values=row)
         conn.close()
     
+    def deleteRacer(self):
+        conn = sqlite3.connect(path)
+        selected_items = self.tv.selection()
+        items_to_delete = []     
+        for selected_item in selected_items:          
+            items_to_delete.append(self.tv.item(selected_item)['values'][2])
+            self.tv.delete(selected_item)
+            tuple(items_to_delete)
+            delete_query = 'DELETE FROM racer WHERE racing_name=?'
+            cur = conn.cursor()
+            cur.execute(delete_query, (items_to_delete))
+            conn.commit()
+        conn.close()
+        
     def EnterRacerWindow(self):
         racerWindow = Toplevel() 
         racerWindow['background']='#2A3132'
@@ -116,13 +130,17 @@ class EnterRacer:
         self.league = Entry(form_content, textvariable=self.league_val)
         self.league.grid(row=4,column=2,columnspan=1, sticky=(E+W), padx=15)
 
-        # show racer statistics
+        # add racer
         btnAdd = Button(form_content, text = "Add", command=self.addRacerIntoDb)
         btnAdd.grid(row = 5, column = 0, pady = 20, padx = 20, sticky=(E+W))
         
+        # delete racer row
+        btnAdd = Button(form_content, text = "Delete", command=self.deleteRacer)
+        btnAdd.grid(row = 5, column = 1, pady = 20, padx = 20, sticky=(E+W))
+        
         table_frame = ttk.Frame(content, borderwidth=6, relief='sunken')
         table_frame.grid(column=0, row=1, sticky=(N+S, E+W), padx=20, pady=20)
-        self.tv = Treeview(table_frame, show='headings')
+        self.tv = Treeview(table_frame, show='headings', selectmode='browse')
         self.tv['columns'] = ('First Name', 'Last Name', 'Racing Name', 'Age', 'Country', 'Team', 'League')
         self.tv.heading('First Name', text='First Name')
         self.tv.column('First Name', anchor='center', width=100)
