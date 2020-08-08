@@ -151,3 +151,9 @@ class EnterRacer:
         table_frame.treeview = self.tv
         table_frame.grid_rowconfigure(0, weight = 1)
         table_frame.grid_columnconfigure(0, weight = 1)
+        
+        # attach a Horizontal (x) scrollbar to the frame
+        treeYScroll = ttk.Scrollbar(table_frame, orient=VERTICAL)
+        treeYScroll.configure(command=self.tv.yview)
+        self.tv.configure(yscrollcommand=treeYScroll.set)
+        treeYScroll.grid(column=3, row=0, columnspan=3, sticky=N + S)
