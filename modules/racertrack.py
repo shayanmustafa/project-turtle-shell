@@ -1,11 +1,40 @@
 from tkinter import * 
 from tkinter.ttk import *
 from tkinter import ttk
+import sqlite3
 
+path = 'c:/users/shaya/turtle-shell.db'
 # function to open a new window  
 # on a button click 
 
 class RaceTrack:
+    
+    def addRaceTrackIntoDb(self):
+        #Connecting to sqlite
+        conn = sqlite3.connect(path)
+        
+        #Creating a cursor object using the cursor() method
+        cursor = conn.cursor()
+        insert_query = """ INSERT INTO racetrack (racetrack_name, lap, racetrack_cup)
+                            VALUES(?, ?, ?) """
+                            
+        racetrack_name = self.racetrack_name_val.get()
+        lap = self.lap_val.get()
+        racetrack_cup = self.racetrack_cup_val.get()
+        
+        self.racetrack_name.delete(0, "end")
+        self.lap.delete(0, "end")
+        self.racetrack_cup.delete(0, "end")
+        
+        cursor.execute(insert_query, (racetrack_name, lap, racetrack_cup))
+        last_row_id = cursor.lastrowid
+        conn.commit()
+        
+        cursor.execute("SELECT racetrack_name, lap, racetrack_cup FROM racetrack WHERE racetrack_id = " + str(last_row_id))
+        self.rows = cursor.fetchall()
+        for row in self.rows:
+            self.tv.insert("", "end", text="0", values=row)
+        conn.close()
 
     def raceTrackWindow(self): 
       
@@ -48,22 +77,22 @@ class RaceTrack:
   
         # A Label widget to show in toplevel 
         Label(form_content, text ="Racetrack Name").grid(row=0,column=0, sticky=(N, W, E, S), padx=15)
-        self.first_name_val = StringVar()
-        self.first_name = Entry(form_content, textvariable=self.first_name_val)
-        self.first_name.grid(row=1,column=0,columnspan=1, sticky=(E+W), padx=15)
+        self.racetrack_name_val = StringVar()
+        self.racetrack_name = Entry(form_content, textvariable=self.racetrack_name_val)
+        self.racetrack_name.grid(row=1,column=0,columnspan=1, sticky=(E+W), padx=15)
 
         Label(form_content, text ="Laps").grid(row=0,column=1, sticky=(N, W, E, S), padx=15)
-        self.last_name_val = StringVar()
-        self.last_name = Entry(form_content, textvariable=self.last_name_val)
-        self.last_name.grid(row=1,column=1,columnspan=1, sticky=(E+W), padx=15)
+        self.lap_val = StringVar()
+        self.lap = Entry(form_content, textvariable=self.lap_val)
+        self.lap.grid(row=1,column=1,columnspan=1, sticky=(E+W), padx=15)
 
         Label(form_content, text="Racetrack Cup").grid(row=0,column=2, sticky=(N, W, E, S), padx=15)
-        self.racing_name_val = StringVar()
-        self.racing_name = Entry(form_content, textvariable=self.racing_name_val)
-        self.racing_name.grid(row=1,column=2,columnspan=1, sticky=(E+W), padx=15)
+        self.racetrack_cup_val = StringVar()
+        self.racetrack_cup = Entry(form_content, textvariable=self.racetrack_cup_val)
+        self.racetrack_cup.grid(row=1,column=2,columnspan=1, sticky=(E+W), padx=15)
         
         # add racer
-        btnAdd = Button(form_content, text = "Add")
+        btnAdd = Button(form_content, text = "Add", command=self.addRaceTrackIntoDb)
         btnAdd.grid(row = 5, column = 0, pady = 20, padx = 20, sticky=(E+W))
         
         # delete racer row
@@ -80,7 +109,13 @@ class RaceTrack:
         self.tv.column('Laps', anchor='center', width=100)
         self.tv.heading('Racetrack Cup', text='Racetrack Cup')
         self.tv.column('Racetrack Cup', anchor='center', width=100)
-        
+        conn = sqlite3.connect(path)
+        cursor = conn.cursor()
+        cursor.execute("SELECT racetrack_name, lap, racetrack_cup FROM racetrack")
+        self.rows = cursor.fetchall()
+        for row in self.rows:
+            self.tv.insert("", "end", text="0", values=row)
+        conn.close()
         self.tv.grid(sticky = (N,S,W,E))
         table_frame.treeview = self.tv
         table_frame.grid_rowconfigure(0, weight = 1)
