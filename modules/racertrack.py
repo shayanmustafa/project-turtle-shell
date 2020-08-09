@@ -35,6 +35,20 @@ class RaceTrack:
         for row in self.rows:
             self.tv.insert("", "end", text="0", values=row)
         conn.close()
+        
+    def deleteRaceTrack(self):
+        conn = sqlite3.connect(path)
+        selected_items = self.tv.selection()
+        items_to_delete = []     
+        for selected_item in selected_items:          
+            items_to_delete.append(self.tv.item(selected_item)['values'][0])
+            self.tv.delete(selected_item)
+            tuple(items_to_delete)
+            delete_query = 'DELETE FROM racetrack WHERE racetrack_name=?'
+            cur = conn.cursor()
+            cur.execute(delete_query, (items_to_delete))
+            conn.commit()
+        conn.close()
 
     def raceTrackWindow(self): 
       
@@ -96,7 +110,7 @@ class RaceTrack:
         btnAdd.grid(row = 5, column = 0, pady = 20, padx = 20, sticky=(E+W))
         
         # delete racer row
-        btnAdd = Button(form_content, text = "Delete")
+        btnAdd = Button(form_content, text = "Delete", command=self.deleteRaceTrack)
         btnAdd.grid(row = 5, column = 1, pady = 20, padx = 20, sticky=(E+W))
         
         table_frame = ttk.Frame(content, borderwidth=6, relief='sunken')
