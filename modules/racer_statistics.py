@@ -37,7 +37,7 @@ class RacerStatistics:
         content.rowconfigure(0, weight=1)
         
         table_frame = ttk.Frame(content, borderwidth=6, relief='sunken')
-        table_frame.grid(column=0, row=0, sticky=(N+S, E+W), padx=20, pady=20)
+        table_frame.grid(column=0, row=0, sticky=(N, S, E, W), padx=20, pady=20)
         self.tv = Treeview(table_frame, show='headings', selectmode='browse')
         self.tv['columns'] = ('First Name', 'Last Name', 'Racing Name')
         self.tv.heading('First Name', text='First Name')
@@ -59,3 +59,9 @@ class RacerStatistics:
         table_frame.treeview = self.tv
         table_frame.grid_rowconfigure(0, weight = 1)
         table_frame.grid_columnconfigure(0, weight = 1)
+        
+        btnAddRacerStatistics = Button(content, text = "Add Statistics", style = 'W.TButton')
+        btnAddRacerStatistics.grid(row = 1, column = 0, pady = 50, padx = 50)
+        
+        btnEditRacerStatistics = Button(content, text = "Edit Statistics", style = 'W.TButton')
+        btnEditRacerStatistics.grid(row = 2, column = 0, pady = 0, padx = 50)
