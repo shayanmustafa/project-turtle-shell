@@ -8,6 +8,58 @@ path = 'c:/users/shaya/turtle-shell.db'
 # function to open a new window  
 # on a button click
 class RacerStatistics:
+    
+    def showForm(self):
+        self.form_content.grid(column=0, row=2, sticky=(N+S, E+W), padx=20, pady=20)
+    
+    def addStatsIntoDb(self):
+        
+        selected_items = self.tv.selection()
+        self.id_to_enter = []
+        for selected_item in selected_items:          
+            self.id_to_enter.append(self.tv.item(selected_item)['values'][0])
+            
+        self.first_name_to_enter = []
+        for selected_item in selected_items:          
+            self.first_name_to_enter.append(self.tv.item(selected_item)['values'][1])
+            
+        self.last_name_to_enter = []
+        for selected_item in selected_items:          
+            self.last_name_to_enter.append(self.tv.item(selected_item)['values'][2])
+            
+        self.racing_name_to_enter = []
+        for selected_item in selected_items:          
+            self.racing_name_to_enter.append(self.tv.item(selected_item)['values'][3])    
+        #Connecting to sqlite
+        conn = sqlite3.connect(path)
+        
+        #Creating a cursor object using the cursor() method
+        cursor = conn.cursor()
+        insert_query = """ INSERT INTO racer_statistics (racer_id, first_name, last_name, racing_name, race_num, placement, num_of_racers, league, racetrack)
+                            VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?) """
+        
+        race_id = self.id_to_enter[0]
+        first_name = self.first_name_to_enter[0]
+        last_name = self.last_name_to_enter[0]
+        racing_name = self.racing_name_to_enter[0]
+        race_num = self.race_number_val.get()
+        placement = self.placement_val.get()
+        num_of_racers = self.num_racers_val.get()
+        league = self.league_val.get()
+        racetrack = self.racetrack_val.get()
+        
+        self.race_number.delete(0, "end")
+        self.placement.delete(0, "end")
+        self.num_racers.delete(0, "end")
+        self.league.delete(0, "end")
+        self.racetrack.delete(0, "end")
+        
+        cursor.execute(insert_query, (race_id, first_name, last_name, racing_name, race_num, placement,
+                                      num_of_racers, league, racetrack))
+        conn.commit()
+        
+        conn.close()
+    
     def RacerStatisticsWindow(self): 
       
         # Toplevel object which will  
@@ -39,7 +91,9 @@ class RacerStatistics:
         table_frame = ttk.Frame(content, borderwidth=6, relief='sunken')
         table_frame.grid(column=0, row=0, sticky=(N, S, E, W), padx=20, pady=20)
         self.tv = Treeview(table_frame, show='headings', selectmode='browse')
-        self.tv['columns'] = ('First Name', 'Last Name', 'Racing Name')
+        self.tv['columns'] = ('Racer ID', 'First Name', 'Last Name', 'Racing Name')
+        self.tv.heading('Racer ID', text='Racer ID')
+        self.tv.column('Racer ID', anchor='center', width=100)
         self.tv.heading('First Name', text='First Name')
         self.tv.column('First Name', anchor='center', width=100)
         self.tv.heading('Last Name', text='Last Name')
@@ -49,7 +103,7 @@ class RacerStatistics:
         
         conn = sqlite3.connect(path)
         cursor = conn.cursor()
-        cursor.execute("SELECT first_name, last_name, racing_name from racer")
+        cursor.execute("SELECT racer_id, first_name, last_name, racing_name from racer")
         self.rows = cursor.fetchall()
         for row in self.rows:
             self.tv.insert("", "end", text="0", values=row)
@@ -60,8 +114,53 @@ class RacerStatistics:
         table_frame.grid_rowconfigure(0, weight = 1)
         table_frame.grid_columnconfigure(0, weight = 1)
         
-        btnAddRacerStatistics = Button(content, text = "Add Statistics", style = 'W.TButton')
-        btnAddRacerStatistics.grid(row = 1, column = 0, pady = 50, padx = 50)
         
-        btnEditRacerStatistics = Button(content, text = "Edit Statistics", style = 'W.TButton')
-        btnEditRacerStatistics.grid(row = 2, column = 0, pady = 0, padx = 50)
+        
+        btnFrame = ttk.Frame(enterRacerStatisticsWindow, borderwidth=6, relief='sunken')
+        btnFrame.grid(column=0, row=1, sticky=(N+S), padx=20, pady=20)
+        btnFrame.columnconfigure(1, weight=1)
+        btnFrame.rowconfigure(1, weight=1)
+        btnAddRacerStatistics = Button(btnFrame, text = "Add Statistics", style = 'W.TButton', command=self.showForm)#command=addButtonWindow.addStatisticsWindow)
+        btnAddRacerStatistics.grid(row = 0, column = 0, pady = 0, padx = 10)
+        
+        btnEditRacerStatistics = Button(btnFrame, text = "Edit Statistics", style = 'W.TButton')
+        btnEditRacerStatistics.grid(row = 1, column = 0, pady = 0, padx = 10)
+        
+        self.form_content = ttk.Frame(enterRacerStatisticsWindow, borderwidth=6, relief='sunken')
+        self.form_content.columnconfigure(0, weight=1)
+        self.form_content.columnconfigure(1, weight=1)
+        self.form_content.columnconfigure(2, weight=1)
+        self.form_content.columnconfigure(3, weight=1)
+        self.form_content.rowconfigure(0, weight=2)
+        self.form_content.rowconfigure(1, weight=2)
+        self.form_content.rowconfigure(2, weight=2)
+        self.form_content.rowconfigure(3, weight=2)
+        
+        # A Label widget to show in toplevel 
+        Label(self.form_content, text ="Race Number").grid(row=0,column=0, sticky=(N, W, E, S), padx=15)
+        self.race_number_val = StringVar()
+        self.race_number = Entry(self.form_content, textvariable=self.race_number_val)
+        self.race_number.grid(row=1,column=0,columnspan=1, sticky=(E+W), padx=15)
+
+        Label(self.form_content, text ="Placement").grid(row=0,column=1, sticky=(N, W, E, S), padx=15)
+        self.placement_val = StringVar()
+        self.placement = Entry(self.form_content, textvariable=self.placement_val)
+        self.placement.grid(row=1,column=1,columnspan=1, sticky=(E+W), padx=15)
+
+        Label(self.form_content, text="Number of Racers").grid(row=0,column=2, sticky=(N, W, E, S), padx=15)
+        self.num_racers_val = StringVar()
+        self.num_racers = Entry(self.form_content, textvariable=self.num_racers_val)
+        self.num_racers.grid(row=1,column=2,columnspan=1, sticky=(E+W), padx=15)
+
+        Label(self.form_content, text="League").grid(row=0,column=3, sticky=(N, W, E, S), padx=15)
+        self.league_val = StringVar()
+        self.league = Entry(self.form_content, textvariable=self.league_val)
+        self.league.grid(row=1,column=3,columnspan=1, sticky=(E+W), padx=15)
+
+        Label(self.form_content, text="Racetrack").grid(row=3,column=0, sticky=(N, W, E, S), padx=15)
+        self.racetrack_val = StringVar()
+        self.racetrack = Entry(self.form_content, textvariable=self.racetrack_val)
+        self.racetrack.grid(row=4,column=0,columnspan=1, sticky=(E+W), padx=15)
+        
+        btnAdd = Button(self.form_content, text = "Add", style = 'W.TButton', command=self.addStatsIntoDb)
+        btnAdd.grid(row = 4, column = 1, pady = 0, padx = 50)
