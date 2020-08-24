@@ -163,6 +163,7 @@ class EnterRacer:
         for row in self.rows:
             self.tv.insert("", "end", text="0", values=row)
         conn.close()
+        print(self.rows)
         #tv.insert("", "end", text="0", values=("Shayan", "Mustafa", "Racing Legend", "22", "Pakistan", "Liverpool", "PL"))
         #tv.insert("", "end", text="0", values=("Roohan", "Mustafa", "Racing Legend", "28", "Pakistan", "Liverpool", "PL"))
         self.tv.grid(sticky = (N,S,W,E))

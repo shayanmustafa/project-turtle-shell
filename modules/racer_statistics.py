@@ -12,7 +12,7 @@ class RacerStatistics:
     
     def showForm(self):
         self.form_content.grid(column=0, row=2, sticky=(N+S, E+W), padx=20, pady=20)
-        self.edit_form_content.grid_remove()
+        #self.edit_form_content.grid_remove()
         selected_items = []
         selected_items = self.tv.selection()
         if not selected_items:
@@ -21,6 +21,33 @@ class RacerStatistics:
             
     def showEditForm(self):
         #Edit Form 
+        
+        selected_rows = []
+        selected_rows = self.tv_stats.selection()
+        if not selected_rows:
+            messagebox.showinfo(title="Select Editable Row", message="Please first select one of the rows from the list to edit statistics.")
+        else:
+            items_race_num = []     
+            for selected_row in selected_rows:          
+                items_race_num.append(self.tv_stats.item(selected_row)['values'][4])
+            
+            items_num_racers = []
+            for selected_row in selected_rows:          
+                items_num_racers.append(self.tv_stats.item(selected_row)['values'][6])
+                
+            items_league = []
+            for selected_row in selected_rows:          
+                items_league.append(self.tv_stats.item(selected_row)['values'][7])
+                
+            items_racetrack = []
+            for selected_row in selected_rows:          
+                items_racetrack.append(self.tv_stats.item(selected_row)['values'][8])
+                
+            race_num_entry = items_race_num[0]
+            num_racers_entry = items_num_racers[0]
+            league_entry = items_league[0]
+            racetrack_entry = items_racetrack[0]
+        
         self.edit_form_content = ttk.Frame(self.enterRacerStatisticsWindow, borderwidth=6, relief='sunken')
         self.edit_form_content.grid(column=0, row=3, sticky=(N+S, E+W), padx=20, pady=20)
         self.edit_form_content.columnconfigure(0, weight=1)
@@ -36,6 +63,7 @@ class RacerStatistics:
         Label(self.edit_form_content, text ="Race Number").grid(row=0,column=0, sticky=(N, W, E, S), padx=15)
         self.edit_race_number_val = StringVar()
         self.edit_race_number = Entry(self.edit_form_content, textvariable=self.edit_race_number_val)
+        self.edit_race_number_val.set(race_num_entry)
         self.edit_race_number.grid(row=1,column=0,columnspan=1, sticky=(E+W), padx=15)
 
         Label(self.edit_form_content, text ="Placement").grid(row=0,column=1, sticky=(N, W, E, S), padx=15)
@@ -46,26 +74,29 @@ class RacerStatistics:
         Label(self.edit_form_content, text="Number of Racers").grid(row=0,column=2, sticky=(N, W, E, S), padx=15)
         self.edit_num_racers_val = StringVar()
         self.edit_num_racers = Entry(self.edit_form_content, textvariable=self.edit_num_racers_val)
+        self.edit_num_racers_val.set(num_racers_entry)
         self.edit_num_racers.grid(row=1,column=2,columnspan=1, sticky=(E+W), padx=15)
 
         Label(self.edit_form_content, text="League").grid(row=0,column=3, sticky=(N, W, E, S), padx=15)
         self.edit_league_val = StringVar()
         self.edit_league = Entry(self.edit_form_content, textvariable=self.edit_league_val)
+        self.edit_league_val.set(league_entry)
         self.edit_league.grid(row=1,column=3,columnspan=1, sticky=(E+W), padx=15)
 
         Label(self.edit_form_content, text="Racetrack").grid(row=3,column=0, sticky=(N, W, E, S), padx=15)
         self.edit_racetrack_val = StringVar()
         self.edit_racetrack = Entry(self.edit_form_content, textvariable=self.edit_racetrack_val)
+        self.edit_racetrack_val.set(racetrack_entry)
         self.edit_racetrack.grid(row=4,column=0,columnspan=1, sticky=(E+W), padx=15)
         
-        #btnAdd = Button(self.edit_form_content, text = "Edit", style = 'W.TButton')
-        #btnAdd.grid(row = 4, column = 1, pady = 0, padx = 50)
+        btnEdit = Button(self.edit_form_content, text = "Edit", style = 'W.TButton')
+        btnEdit.grid(row = 4, column = 1, pady = 0, padx = 50)
         
     def showEditableRows(self):
         #self.edit_form_content.grid(column=0, row=3, sticky=(N+S, E+W), padx=20, pady=20)
         
         self.form_content.grid_remove()
-        self.btnFrame.grid_remove()
+        
         
         selected_items = []
         selected_items = self.tv.selection()
@@ -73,6 +104,7 @@ class RacerStatistics:
         if not selected_items:
             messagebox.showinfo(title="Select Racer", message="Please first select one of the racers from the list to edit statistics.")
         else:
+            self.btnFrame.grid_remove()
             stats_table_frame = ttk.Frame(self.content, borderwidth=6, relief='sunken')
             stats_table_frame.grid(column=0, row=0, sticky=(N, S, E, W), padx=20, pady=20)
             self.tv_stats = Treeview(stats_table_frame, show='headings', selectmode='browse')

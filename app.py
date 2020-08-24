@@ -36,7 +36,8 @@ btnRaceTrack = Button(app, text = "Enter Racetrack Information", style = 'W.TBut
 btnRaceTrack.grid(row = 0, column = 2, pady = 50, padx = 50)
 
 # show racer statistics
-btnShowStatistics = Button(app, text = "Show Racer's Statistics", style = 'W.TButton', command = ShowStatistics)
+showStatistics = ShowStatistics()
+btnShowStatistics = Button(app, text = "Show Racer's Statistics", style = 'W.TButton', command = showStatistics.ShowStatisticsWindow)
 btnShowStatistics.grid(row = 1, column = 0, pady = 50, padx = 50)
 
 # compare racers
