@@ -14,17 +14,43 @@ class CompareRacers:
             items_to_delete.append(self.tv_total_racers.item(selected_item)['values'][2])
             racing_name = self.tv_total_racers.item(selected_item)['values'][2]
             self.tv_total_racers.delete(selected_item)
-        
-        print(racing_name)
+            
         conn = sqlite3.connect(path)
         cursor = conn.cursor()
         cursor.execute('SELECT DISTINCT first_name, last_name, racing_name FROM racer_statistics WHERE racing_name = ?', (racing_name,))
         self.compare_rows = cursor.fetchall()
         for row in self.compare_rows:
             self.tv_compare_racers.insert("", "end", text="0", values=row)
-        print(self.compare_rows)
         conn.close()
         
+        
+    
+    def predictWinner(self):
+        racing_name_list = []
+        for line in self.tv_compare_racers.get_children():
+            for value in self.tv_compare_racers.item(line)['values']:
+                racing_name_list.append(value)
+                
+        racing_name_values = racing_name_list[2::3]
+        
+        #Connecting to sqlite
+        conn = sqlite3.connect(path)
+        
+        #Creating a cursor object using the cursor() method
+        cursor = conn.cursor()
+        
+        #select_placement_query = 'SELECT placement from racer_statistics where placement = ?'
+        placement_rows = []
+        racer_placement = []
+        for values in racing_name_values:
+            cursor.execute('SELECT placement from racer_statistics where racing_name = ?', (values,))
+            placement_rows = cursor.fetchall()
+            racer_placement.append(placement_rows)
+        
+        placement_values = [[x for tup in lst for x in tup] for lst in racer_placement]
+        print(placement_values)
+                
+            
     # function to open a new window  
     # on a button click 
     def compareRacersWindow(self): 
@@ -94,3 +120,6 @@ class CompareRacers:
         treeview_content.grid_rowconfigure(0, weight = 1)
         treeview_content.grid_columnconfigure(2, weight = 1)
         
+        # predict button
+        btnPredict = Button(treeview_content, text = "Predict", command=self.predictWinner)
+        btnPredict.grid(row = 1, column = 1, pady = 20, padx = 20, sticky=(E+W))
