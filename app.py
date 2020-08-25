@@ -41,7 +41,8 @@ btnShowStatistics = Button(app, text = "Show Racer's Statistics", style = 'W.TBu
 btnShowStatistics.grid(row = 1, column = 0, pady = 50, padx = 50)
 
 # compare racers
-btnCompareRacers = Button(app, text = "Compare Racers", style = 'W.TButton', command = CompareRacers)
+compareRacers = CompareRacers()
+btnCompareRacers = Button(app, text = "Compare Racers", style = 'W.TButton', command = compareRacers.compareRacersWindow)
 btnCompareRacers.grid(row = 1, column = 1, pady = 50, padx = 50)
 
 # start app
