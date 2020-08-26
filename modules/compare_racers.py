@@ -52,9 +52,30 @@ class CompareRacers:
         points_dictionary = {'1st': 15, '2nd': 12, '3rd': 10, '4th': 9, '5th': 8, '6th': 7, '7th': 6, '8th': 5,
                       '9th': 4, '10th': 3, '11th': 2, '12th': 1}
         placement_points = [[points_dictionary.get(item, item) for item in lst] for lst in placement_values]
-        print(placement_values)
-        print(placement_points)            
-            
+        #print(placement_points)
+        sum_of_points = []
+        for points in placement_points:
+            sum_of_points.append(sum(points))
+        print(sum_of_points)
+        
+        racenum_rows = []
+        racer_racenum = []
+        for name_values in racing_name_values:
+            cursor.execute('SELECT race_num from racer_statistics where racing_name = ?', (name_values,))
+            racenum_rows = cursor.fetchall()
+            racer_racenum.append(racenum_rows)
+        racenum_values = [[x for tup in lst for x in tup] for lst in racer_racenum]
+        
+        race_number = []
+        for values in racenum_values:
+            race_number.append(values[-1])
+        print(race_number)
+        
+        avg = [i / j for i, j in zip(sum_of_points, race_number)] 
+        win_avg = [x / 15 for x in avg]
+        win_percentage = [y * 100 for y in win_avg]
+        print(win_percentage)
+        
     # function to open a new window  
     # on a button click 
     def compareRacersWindow(self): 
