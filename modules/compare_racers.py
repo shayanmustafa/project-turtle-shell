@@ -1,6 +1,10 @@
 from tkinter import * 
 from tkinter.ttk import *
 from tkinter import ttk
+import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import (
+    FigureCanvasTkAgg, NavigationToolbar2Tk)
 import sqlite3
 
 path = 'c:/users/shaya/turtle-shell.db'
@@ -30,9 +34,9 @@ class CompareRacers:
         for line in self.tv_compare_racers.get_children():
             for value in self.tv_compare_racers.item(line)['values']:
                 racing_name_list.append(value)
-                
+               
         racing_name_values = racing_name_list[2::3]
-        
+        print(racing_name_values)
         #Connecting to sqlite
         conn = sqlite3.connect(path)
         
@@ -73,8 +77,12 @@ class CompareRacers:
         
         avg = [i / j for i, j in zip(sum_of_points, race_number)] 
         win_avg = [x / 15 for x in avg]
-        win_percentage = [y * 100 for y in win_avg]
-        print(win_percentage)
+        self.win_percentage = [y * 100 for y in win_avg]
+        print(self.win_percentage)
+        pred_result = list(zip(racing_name_values, self.win_percentage))
+        print(pred_result)
+        for pred in pred_result:
+            self.tv_prediction.insert("", "end", text="0", values=pred)
         
     # function to open a new window  
     # on a button click 
@@ -146,5 +154,37 @@ class CompareRacers:
         treeview_content.grid_columnconfigure(2, weight = 1)
         
         # predict button
-        btnPredict = Button(treeview_content, text = "Predict", command=self.predictWinner)
+        btnPredict = Button(treeview_content, text = "Calculate Prediction", command=self.predictWinner)
         btnPredict.grid(row = 1, column = 1, pady = 20, padx = 20, sticky=(E+W))
+        
+        
+        #racers to compare table
+        self.tv_prediction = Treeview(treeview_content, show='headings', selectmode='browse')
+        self.tv_prediction['columns'] = ('Racing Name', 'Win Prediction')
+        self.tv_prediction.heading('Racing Name', text='Racing Name')
+        self.tv_prediction.column('Racing Name', anchor='center', width=100)
+        self.tv_prediction.heading('Win Prediction', text='Win Prediction')
+        self.tv_prediction.column('Win Prediction', anchor='center', width=100)
+        
+        self.tv_prediction.grid(row=3, column=1, sticky = (N,S,W,E))
+        treeview_content.treeview = self.tv_prediction
+        treeview_content.grid_rowconfigure(1, weight = 1)
+        treeview_content.grid_columnconfigure(2, weight = 1)
+        
+        #c = Canvas(compareRacersWindow, width=154, height=154)
+        #c.grid(row=3, column=0)
+        #c.create_arc((2,2,152,152), fill="#FAF402", outline="#FAF402", start=1, extent = 200)
+        #c.create_arc((2,2,152,152), fill="#2BFFF4", outline="#2BFFF4", start=200, extent = 400)
+        #c.create_arc((2,2,152,152), fill="#E00022", outline="#E00022", start=600, extent = 50)
+        #c.create_arc((2,2,152,152), fill="#7A0871", outline="#7A0871", start=650, extent = 200)
+        #c.create_arc((2,2,152,152), fill="#294994", outline="#294994", start=850, extent = 150)
+        
+         # now to get the total number of failed in each section
+        #actualFigure = plt.figure(figsize = (10,10))
+        #actualFigure.suptitle("Fruit Stats", fontsize = 22)
+        #win = [1, 2, 5, 10]
+        #plt.pie(win, shadow=True, autopct='%1.1f%%')
+
+        #canvas = FigureCanvasTkAgg(actualFigure, master=compareRacersWindow)
+        #canvas.draw()
+        #canvas.get_tk_widget().grid(row=3, column=0)
