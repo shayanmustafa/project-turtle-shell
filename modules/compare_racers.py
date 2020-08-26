@@ -48,8 +48,12 @@ class CompareRacers:
             racer_placement.append(placement_rows)
         
         placement_values = [[x for tup in lst for x in tup] for lst in racer_placement]
+        
+        points_dictionary = {'1st': 15, '2nd': 12, '3rd': 10, '4th': 9, '5th': 8, '6th': 7, '7th': 6, '8th': 5,
+                      '9th': 4, '10th': 3, '11th': 2, '12th': 1}
+        placement_points = [[points_dictionary.get(item, item) for item in lst] for lst in placement_values]
         print(placement_values)
-                
+        print(placement_points)            
             
     # function to open a new window  
     # on a button click 
