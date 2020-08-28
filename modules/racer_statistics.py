@@ -17,17 +17,22 @@ class RacerStatistics:
         selected_items = []
         selected_items = self.tv.selection()
         if not selected_items:
-            messagebox.showinfo(title="Select Racer", message="Please first select one of the racers from the list to add statistics.")
+            messagebox.showinfo(title="Select Racer", message="Please first select one of the racers from the list to add statistics.", parent=self.enterRacerStatisticsWindow)
             self.form_content.grid_remove()
             
     def editPlacement(self):
         placement_val = self.edit_placement_val.get()
-        conn = sqlite3.connect(path)
-        cursor = conn.cursor()
-        edit_query = 'UPDATE racer_statistics SET placement = ? WHERE race_num = ?'
-        cursor.execute(edit_query, (placement_val, self.race_num_entry))
-        conn.commit()
-        conn.close()
+        if placement_val == '':
+            messagebox.showinfo(title="Enter Placement", message="Please enter placement of racer", parent=self.enterRacerStatisticsWindow)
+        else:
+            conn = sqlite3.connect(path)
+            cursor = conn.cursor()
+            edit_query = 'UPDATE racer_statistics SET placement = ? WHERE race_num = ? AND racing_name = ?'
+            cursor.execute(edit_query, (placement_val, self.edit_race_number_val.get(), self.racingname))
+            conn.commit()
+            conn.close()
+        
+        
                     
     def showEditForm(self):
         #Edit Form 
@@ -35,7 +40,7 @@ class RacerStatistics:
         selected_rows = []
         selected_rows = self.tv_stats.selection()
         if not selected_rows:
-            messagebox.showinfo(title="Select Editable Row", message="Please first select one of the rows from the list to edit statistics.")
+            messagebox.showinfo(title="Select Editable Row", message="Please first select one of the rows from the list to edit statistics.", parent=self.enterRacerStatisticsWindow)
         else:
             items_race_num = []     
             for selected_row in selected_rows:          
@@ -117,7 +122,7 @@ class RacerStatistics:
         selected_items = self.tv.selection()
         
         if not selected_items:
-            messagebox.showinfo(title="Select Racer", message="Please first select one of the racers from the list to edit statistics.")
+            messagebox.showinfo(title="Select Racer", message="Please first select one of the racers from the list to edit statistics.", parent=self.enterRacerStatisticsWindow)
         else:
             self.btnFrame.grid_remove()
             stats_table_frame = ttk.Frame(self.content, borderwidth=6, relief='sunken')
@@ -212,7 +217,7 @@ class RacerStatistics:
         self.rows = cursor.fetchall()
         for row in self.rows:
             if (row[0] == int(self.race_number_val.get()) and row[1] == self.placement_val.get() and row[2] == league_values[0]):
-                messagebox.showerror(title="Error Box", message="A racer already exists in the same placement")
+                messagebox.showinfo(title="Select Racer", message="Please first select one of the racers from the list to edit statistics.", parent=self.enterRacerStatisticsWindow)
                 exists = 1
                 break
         if exists == 0:
