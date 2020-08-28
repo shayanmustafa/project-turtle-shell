@@ -1,13 +1,11 @@
 from tkinter import * 
 from tkinter.ttk import *
 from tkinter import ttk
-import matplotlib.pyplot as plt
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_tkagg import (
-    FigureCanvasTkAgg, NavigationToolbar2Tk)
+
 import sqlite3
 
-path = 'c:/users/shaya/turtle-shell.db'
+#path = 'c:/users/shaya/turtle-shell.db'
+path = 'd:/project-turtle-shell/store.db'
 
 class CompareRacers:
     

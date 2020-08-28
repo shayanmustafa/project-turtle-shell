@@ -4,7 +4,8 @@ from tkinter import ttk
 from tkinter import Tk, Button, font
 import sqlite3
 
-path = 'c:/users/shaya/turtle-shell.db'
+#path = 'c:/users/shaya/turtle-shell.db'
+path = 'd:/project-turtle-shell/store.db'
 
 class EnterRacer:
     
@@ -81,7 +82,7 @@ class EnterRacer:
         content = ttk.Frame(racerWindow, borderwidth=6, relief='sunken')
         content.grid(column=0, row=0, sticky=(N+S, E+W), padx=20, pady=20)
         content.columnconfigure(0, weight=1)
-        content.rowconfigure(0, weight=1)
+        content.rowconfigure(1, weight=1)
 
         form_content = ttk.Frame(content)
         form_content.grid(column=0, row=0, sticky=(N, E+W), padx=20, pady=20)

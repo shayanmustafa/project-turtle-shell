@@ -4,7 +4,8 @@ from tkinter.ttk import *
 from tkinter import ttk
 import sqlite3
 
-path = 'c:/users/shaya/turtle-shell.db'
+#path = 'c:/users/shaya/turtle-shell.db'
+path = 'd:/project-turtle-shell/store.db'
 
 # function to open a new window  
 # on a button click
@@ -19,6 +20,15 @@ class RacerStatistics:
             messagebox.showinfo(title="Select Racer", message="Please first select one of the racers from the list to add statistics.")
             self.form_content.grid_remove()
             
+    def editPlacement(self):
+        placement_val = self.edit_placement_val.get()
+        conn = sqlite3.connect(path)
+        cursor = conn.cursor()
+        edit_query = 'UPDATE racer_statistics SET placement = ? WHERE race_num = ?'
+        cursor.execute(edit_query, (placement_val, self.race_num_entry))
+        conn.commit()
+        conn.close()
+                    
     def showEditForm(self):
         #Edit Form 
         
@@ -43,10 +53,15 @@ class RacerStatistics:
             for selected_row in selected_rows:          
                 items_racetrack.append(self.tv_stats.item(selected_row)['values'][8])
                 
-            race_num_entry = items_race_num[0]
+            items_racing_name = []
+            for selected_row in selected_rows:          
+                items_racing_name.append(self.tv_stats.item(selected_row)['values'][3])
+                
+            self.race_num_entry = items_race_num[0]
             num_racers_entry = items_num_racers[0]
             league_entry = items_league[0]
             racetrack_entry = items_racetrack[0]
+            self.racingname = items_racing_name[0]
         
         self.edit_form_content = ttk.Frame(self.enterRacerStatisticsWindow, borderwidth=6, relief='sunken')
         self.edit_form_content.grid(column=0, row=3, sticky=(N+S, E+W), padx=20, pady=20)
@@ -62,8 +77,8 @@ class RacerStatistics:
         # A Label widget to show in toplevel 
         Label(self.edit_form_content, text ="Race Number").grid(row=0,column=0, sticky=(N, W, E, S), padx=15)
         self.edit_race_number_val = StringVar()
-        self.edit_race_number = Entry(self.edit_form_content, textvariable=self.edit_race_number_val)
-        self.edit_race_number_val.set(race_num_entry)
+        self.edit_race_number = Entry(self.edit_form_content, textvariable=self.edit_race_number_val, state=DISABLED)
+        self.edit_race_number_val.set(self.race_num_entry)
         self.edit_race_number.grid(row=1,column=0,columnspan=1, sticky=(E+W), padx=15)
 
         Label(self.edit_form_content, text ="Placement").grid(row=0,column=1, sticky=(N, W, E, S), padx=15)
@@ -73,23 +88,23 @@ class RacerStatistics:
 
         Label(self.edit_form_content, text="Number of Racers").grid(row=0,column=2, sticky=(N, W, E, S), padx=15)
         self.edit_num_racers_val = StringVar()
-        self.edit_num_racers = Entry(self.edit_form_content, textvariable=self.edit_num_racers_val)
+        self.edit_num_racers = Entry(self.edit_form_content, textvariable=self.edit_num_racers_val, state=DISABLED)
         self.edit_num_racers_val.set(num_racers_entry)
         self.edit_num_racers.grid(row=1,column=2,columnspan=1, sticky=(E+W), padx=15)
 
         Label(self.edit_form_content, text="League").grid(row=0,column=3, sticky=(N, W, E, S), padx=15)
         self.edit_league_val = StringVar()
-        self.edit_league = Entry(self.edit_form_content, textvariable=self.edit_league_val)
+        self.edit_league = Entry(self.edit_form_content, textvariable=self.edit_league_val, state=DISABLED)
         self.edit_league_val.set(league_entry)
         self.edit_league.grid(row=1,column=3,columnspan=1, sticky=(E+W), padx=15)
 
         Label(self.edit_form_content, text="Racetrack").grid(row=3,column=0, sticky=(N, W, E, S), padx=15)
         self.edit_racetrack_val = StringVar()
-        self.edit_racetrack = Entry(self.edit_form_content, textvariable=self.edit_racetrack_val)
+        self.edit_racetrack = Entry(self.edit_form_content, textvariable=self.edit_racetrack_val, state=DISABLED)
         self.edit_racetrack_val.set(racetrack_entry)
         self.edit_racetrack.grid(row=4,column=0,columnspan=1, sticky=(E+W), padx=15)
         
-        btnEdit = Button(self.edit_form_content, text = "Edit", style = 'W.TButton')
+        btnEdit = Button(self.edit_form_content, text = "Edit", style = 'W.TButton', command=self.editPlacement)
         btnEdit.grid(row = 4, column = 1, pady = 0, padx = 50)
         
     def showEditableRows(self):
@@ -185,19 +200,24 @@ class RacerStatistics:
         race_num = self.race_number_val.get()
         placement = self.placement_val.get()
         num_of_racers = self.num_racers_val.get()
-        league = self.league_val.get()
+        #league = self.league_val.get()
         racetrack = self.racetrack_val.get()
+        
+        cursor.execute("SELECT DISTINCT league FROM racer WHERE racing_name = ?", (racing_name,))
+        league_row = cursor.fetchall()
+        league_values = [x for tup in league_row for x in tup]
+        print(league_values[0])
         
         cursor.execute("SELECT race_num, placement, league FROM racer_statistics")
         self.rows = cursor.fetchall()
         for row in self.rows:
-            if (row[0] == int(self.race_number_val.get()) and row[1] == self.placement_val.get() and row[2] == self.league_val.get()):
+            if (row[0] == int(self.race_number_val.get()) and row[1] == self.placement_val.get() and row[2] == league_values[0]):
                 messagebox.showerror(title="Error Box", message="A racer already exists in the same placement")
                 exists = 1
                 break
         if exists == 0:
             cursor.execute(insert_query, (race_id, first_name, last_name, racing_name, race_num, placement,
-                                          num_of_racers, league, racetrack))
+                                          num_of_racers, league_values[0], racetrack))
             conn.commit()
         
         conn.close()
@@ -205,7 +225,7 @@ class RacerStatistics:
         self.race_number.delete(0, "end")
         self.placement.delete(0, "end")
         self.num_racers.delete(0, "end")
-        self.league.delete(0, "end")
+        #self.league.delete(0, "end")
         self.racetrack.delete(0, "end")
         
         self.form_content.grid_remove()
@@ -216,7 +236,7 @@ class RacerStatistics:
         # be treated as a new window 
         self.enterRacerStatisticsWindow = Toplevel()
         self.enterRacerStatisticsWindow['background']='#2A3132'
-        
+        #self.enterRacerStatisticsWindow.attributes('-topmost', 'true')
         style = Style()
         style.theme_use('alt')
         style.configure('W.AddButton', font =
@@ -302,10 +322,10 @@ class RacerStatistics:
         self.num_racers = Entry(self.form_content, textvariable=self.num_racers_val)
         self.num_racers.grid(row=1,column=2,columnspan=1, sticky=(E+W), padx=15)
 
-        Label(self.form_content, text="League").grid(row=0,column=3, sticky=(N, W, E, S), padx=15)
-        self.league_val = StringVar()
-        self.league = Entry(self.form_content, textvariable=self.league_val)
-        self.league.grid(row=1,column=3,columnspan=1, sticky=(E+W), padx=15)
+        #Label(self.form_content, text="League").grid(row=0,column=3, sticky=(N, W, E, S), padx=15)
+        #self.league_val = StringVar()
+        #self.league = Entry(self.form_content, textvariable=self.league_val)
+        #self.league.grid(row=1,column=3,columnspan=1, sticky=(E+W), padx=15)
 
         Label(self.form_content, text="Racetrack").grid(row=3,column=0, sticky=(N, W, E, S), padx=15)
         self.racetrack_val = StringVar()

@@ -3,7 +3,8 @@ from tkinter.ttk import *
 from tkinter import ttk
 import sqlite3
 
-path = 'c:/users/shaya/turtle-shell.db'
+#path = 'c:/users/shaya/turtle-shell.db'
+path = 'd:/project-turtle-shell/store.db'
 
 # function to open a new window  
 # on a button click 
