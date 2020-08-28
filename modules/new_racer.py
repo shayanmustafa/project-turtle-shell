@@ -26,8 +26,24 @@ class EnterRacer:
         country = self.country_val.get()
         team = self.team_val.get()
         league = self.league_val.get()
-                
-        if int(age) >= 16 and int(age) <= 100:
+        
+        if int(age) < 16:
+           messagebox.showinfo(title="Input Error", message="Age should be between 16 and 100", parent=self.racerWindow)
+        elif int(age) > 100:
+            messagebox.showinfo(title="Input Error", message="Age should be between 16 and 100", parent=self.racerWindow)
+        elif len(first_name) > 20:
+            messagebox.showinfo(title="Input Error", message="First name cannot exceed 20 characters", parent=self.racerWindow)
+        elif len(last_name) > 20:
+            messagebox.showinfo(title="Input Error", message="Last name cannot exceed 20 characters", parent=self.racerWindow)
+        elif len(racing_name) > 20:
+            messagebox.showinfo(title="Input Error", message="Racing name cannot exceed 20 characters", parent=self.racerWindow)
+        elif len(country) > 20:
+            messagebox.showinfo(title="Input Error", message="Country name cannot exceed 20 characters", parent=self.racerWindow)
+        elif len(team) > 20:
+            messagebox.showinfo(title="Input Error", message="Team name cannot exceed 20 characters", parent=self.racerWindow)
+        elif len(league) > 20:
+            messagebox.showinfo(title="Input Error", message="League name cannot exceed 20 characters", parent=self.racerWindow)
+        else:
             self.first_name.delete(0, "end")
             self.last_name.delete(0, "end")
             self.racing_name.delete(0, "end")
@@ -46,8 +62,7 @@ class EnterRacer:
             for row in self.rows:
                 self.tv.insert("", "end", text="0", values=row)
             conn.close()
-        else:
-            messagebox.showinfo(title="Input Error", message="Age should be between 16 and 100", parent=self.racerWindow)
+            
     
     def deleteRacer(self):
         conn = sqlite3.connect(path)
