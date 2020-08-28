@@ -1,4 +1,5 @@
 from tkinter import * 
+from tkinter import messagebox
 from tkinter.ttk import *
 from tkinter import ttk
 from tkinter import Tk, Button, font
@@ -25,25 +26,28 @@ class EnterRacer:
         country = self.country_val.get()
         team = self.team_val.get()
         league = self.league_val.get()
+                
+        if int(age) >= 16 and int(age) <= 100:
+            self.first_name.delete(0, "end")
+            self.last_name.delete(0, "end")
+            self.racing_name.delete(0, "end")
+            self.age.delete(0, "end")
+            self.country.delete(0, "end")
+            self.team.delete(0, "end")
+            self.league.delete(0, "end")
         
-        self.first_name.delete(0, "end")
-        self.last_name.delete(0, "end")
-        self.racing_name.delete(0, "end")
-        self.age.delete(0, "end")
-        self.country.delete(0, "end")
-        self.team.delete(0, "end")
-        self.league.delete(0, "end")
+            cursor.execute(insert_query, (first_name, last_name, racing_name,
+                                        age, country, team, league))
+            last_row_id = cursor.lastrowid
+            conn.commit()
         
-        cursor.execute(insert_query, (first_name, last_name, racing_name,
-                                      age, country, team, league))
-        last_row_id = cursor.lastrowid
-        conn.commit()
-        
-        cursor.execute("SELECT first_name, last_name, racing_name, age, country, team, league FROM racer WHERE racer_id = " + str(last_row_id))
-        self.rows = cursor.fetchall()
-        for row in self.rows:
-            self.tv.insert("", "end", text="0", values=row)
-        conn.close()
+            cursor.execute("SELECT first_name, last_name, racing_name, age, country, team, league FROM racer WHERE racer_id = " + str(last_row_id))
+            self.rows = cursor.fetchall()
+            for row in self.rows:
+                self.tv.insert("", "end", text="0", values=row)
+            conn.close()
+        else:
+            messagebox.showinfo(title="Input Error", message="Age should be between 16 and 100", parent=self.racerWindow)
     
     def deleteRacer(self):
         conn = sqlite3.connect(path)
@@ -60,8 +64,8 @@ class EnterRacer:
         conn.close()
         
     def EnterRacerWindow(self):
-        racerWindow = Toplevel() 
-        racerWindow['background']='#2A3132'
+        self.racerWindow = Toplevel() 
+        self.racerWindow['background']='#2A3132'
 
         style = Style()
         style.theme_use('alt')
@@ -72,14 +76,14 @@ class EnterRacer:
 
         # sets the title of the 
         # Toplevel widget 
-        racerWindow.title("Enter New Racer")
-        racerWindow.columnconfigure(0, weight=1)
-        racerWindow.rowconfigure(0, weight=1)
+        self.racerWindow.title("Enter New Racer")
+        self.racerWindow.columnconfigure(0, weight=1)
+        self.racerWindow.rowconfigure(0, weight=1)
         # sets the geometry of toplevel 
-        racerWindow.geometry("700x500") 
+        self.racerWindow.geometry("700x500") 
 
         #content frame (first frame)
-        content = ttk.Frame(racerWindow, borderwidth=6, relief='sunken')
+        content = ttk.Frame(self.racerWindow, borderwidth=6, relief='sunken')
         content.grid(column=0, row=0, sticky=(N+S, E+W), padx=20, pady=20)
         content.columnconfigure(0, weight=1)
         content.rowconfigure(1, weight=1)

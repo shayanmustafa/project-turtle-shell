@@ -31,8 +31,6 @@ class RacerStatistics:
             cursor.execute(edit_query, (placement_val, self.edit_race_number_val.get(), self.racingname))
             conn.commit()
             conn.close()
-        
-        
                     
     def showEditForm(self):
         #Edit Form 
