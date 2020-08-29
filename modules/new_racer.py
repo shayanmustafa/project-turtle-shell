@@ -32,30 +32,39 @@ class EnterRacer:
         
         if first_name == '' or last_name == '' or racing_name == '' or age == '' or country == '' or team == '' or league == '':
            messagebox.showinfo(title="Input Error", message="Any information field cannot be empty.", parent=self.racerWindow)
+           exists = 1
            conn.close()
         elif int(age) < 16:
            messagebox.showinfo(title="Input Error", message="Age should be between 16 and 100", parent=self.racerWindow)
+           exists = 1
            conn.close()
         elif int(age) > 100:
             messagebox.showinfo(title="Input Error", message="Age should be between 16 and 100", parent=self.racerWindow)
+            exists = 1
             conn.close()
         elif len(first_name) > 20:
             messagebox.showinfo(title="Input Error", message="First name cannot exceed 20 characters", parent=self.racerWindow)
+            exists = 1
             conn.close()
         elif len(last_name) > 20:
             messagebox.showinfo(title="Input Error", message="Last name cannot exceed 20 characters", parent=self.racerWindow)
+            exists = 1
             conn.close()
         elif len(racing_name) > 20:
             messagebox.showinfo(title="Input Error", message="Racing name cannot exceed 20 characters", parent=self.racerWindow)
+            exists = 1
             conn.close()
         elif len(country) > 20:
             messagebox.showinfo(title="Input Error", message="Country name cannot exceed 20 characters", parent=self.racerWindow)
+            exists = 1
             conn.close()
         elif len(team) > 20:
             messagebox.showinfo(title="Input Error", message="Team name cannot exceed 20 characters", parent=self.racerWindow)
+            exists = 1
             conn.close()
         elif len(league) > 20:
             messagebox.showinfo(title="Input Error", message="League name cannot exceed 20 characters", parent=self.racerWindow)
+            exists = 1
             conn.close()
         else:
             for row in racer_rows:
