@@ -11,11 +11,14 @@ path = 'd:/project-turtle-shell/store.db'
 class EnterRacer:
     
     def addRacerIntoDb(self):
+        exists = 0
         #Connecting to sqlite
         conn = sqlite3.connect(path)
         
         #Creating a cursor object using the cursor() method
         cursor = conn.cursor()
+        cursor.execute("SELECT first_name, last_name, racing_name FROM racer")
+        racer_rows = cursor.fetchall()
         insert_query = """ INSERT INTO racer (first_name, last_name, racing_name, age, country, team, league)
                             VALUES(?, ?, ?, ?, ?, ?, ?) """
                             
@@ -27,23 +30,45 @@ class EnterRacer:
         team = self.team_val.get()
         league = self.league_val.get()
         
-        if int(age) < 16:
+        if first_name == '' or last_name == '' or racing_name == '' or age == '' or country == '' or team == '' or league == '':
+           messagebox.showinfo(title="Input Error", message="Any information field cannot be empty.", parent=self.racerWindow)
+           conn.close()
+        elif int(age) < 16:
            messagebox.showinfo(title="Input Error", message="Age should be between 16 and 100", parent=self.racerWindow)
+           conn.close()
         elif int(age) > 100:
             messagebox.showinfo(title="Input Error", message="Age should be between 16 and 100", parent=self.racerWindow)
+            conn.close()
         elif len(first_name) > 20:
             messagebox.showinfo(title="Input Error", message="First name cannot exceed 20 characters", parent=self.racerWindow)
+            conn.close()
         elif len(last_name) > 20:
             messagebox.showinfo(title="Input Error", message="Last name cannot exceed 20 characters", parent=self.racerWindow)
+            conn.close()
         elif len(racing_name) > 20:
             messagebox.showinfo(title="Input Error", message="Racing name cannot exceed 20 characters", parent=self.racerWindow)
+            conn.close()
         elif len(country) > 20:
             messagebox.showinfo(title="Input Error", message="Country name cannot exceed 20 characters", parent=self.racerWindow)
+            conn.close()
         elif len(team) > 20:
             messagebox.showinfo(title="Input Error", message="Team name cannot exceed 20 characters", parent=self.racerWindow)
+            conn.close()
         elif len(league) > 20:
             messagebox.showinfo(title="Input Error", message="League name cannot exceed 20 characters", parent=self.racerWindow)
+            conn.close()
         else:
+            for row in racer_rows:
+                if(row[0] == first_name and row[1] == last_name and row[2] == racing_name):
+                    messagebox.showinfo(title="Input Error", message="The racer information already exists.", parent=self.racerWindow)
+                    
+                    conn.close()
+                    exists = 1
+                elif row[2] == racing_name:
+                    messagebox.showinfo(title="Input Error", message="The racing name already exists. Please enter a unique racing name.", parent=self.racerWindow)
+                    exists = 1
+        if exists == 0:
+            print(racing_name)
             self.first_name.delete(0, "end")
             self.last_name.delete(0, "end")
             self.racing_name.delete(0, "end")
@@ -51,9 +76,9 @@ class EnterRacer:
             self.country.delete(0, "end")
             self.team.delete(0, "end")
             self.league.delete(0, "end")
-        
+            #conn = sqlite3.connect(path)
             cursor.execute(insert_query, (first_name, last_name, racing_name,
-                                        age, country, team, league))
+                            age, country, team, league))
             last_row_id = cursor.lastrowid
             conn.commit()
         
