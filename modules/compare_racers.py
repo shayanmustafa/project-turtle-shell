@@ -5,7 +5,13 @@ from tkinter import ttk
 import sqlite3
 
 #path = 'c:/users/shaya/turtle-shell.db'
-path = 'd:/project-turtle-shell/store.db'
+path = 'store.db'
+
+conn = sqlite3.connect(path)
+cursor = conn.cursor()
+cursor.execute('CREATE TABLE IF NOT EXISTS racer (racer_id INTEGER PRIMARY KEY UNIQUE, first_name CHAR, last_name CHAR, racing_name CHAR UNIQUE, age INTEGER, country CHAR, team CHAR, league CHAR)')
+cursor.execute('CREATE TABLE IF NOT EXISTS racer_statistics (racer_id INTEGER, first_name CHAR, last_name CHAR, racing_name CHAR, race_num INTEGER, placement CHAR, num_of_racers INTEGER, league CHAR, racetrack CHAR)')
+cursor.execute('CREATE TABLE IF NOT EXISTS racetrack (racetrack_id INTEGER PRIMARY KEY, racetrack_name CHAR, lap INTEGER, racetrack_cup CHAR)')
 
 class CompareRacers:
     
@@ -75,7 +81,8 @@ class CompareRacers:
         
         avg = [i / j for i, j in zip(sum_of_points, race_number)] 
         win_avg = [x / 15 for x in avg]
-        self.win_percentage = [y * 100 for y in win_avg]
+        self.win_percentage = [int(y * 100) for y in win_avg]
+        
         print(self.win_percentage)
         pred_result = list(zip(racing_name_values, self.win_percentage))
         print(pred_result)
@@ -153,7 +160,7 @@ class CompareRacers:
         
         # predict button
         btnPredict = Button(treeview_content, text = "Calculate Prediction", command=self.predictWinner)
-        btnPredict.grid(row = 1, column = 1, pady = 20, padx = 20, sticky=(E+W))
+        btnPredict.grid(row = 3, column = 1, pady = 20, padx = 20, sticky=(E+W))
         
         
         #racers to compare table
@@ -164,25 +171,7 @@ class CompareRacers:
         self.tv_prediction.heading('Win Prediction', text='Win Prediction')
         self.tv_prediction.column('Win Prediction', anchor='center', width=100)
         
-        self.tv_prediction.grid(row=3, column=1, sticky = (N,S,W,E))
+        self.tv_prediction.grid(row=4, column=1, sticky = (N,S,W,E))
         treeview_content.treeview = self.tv_prediction
         treeview_content.grid_rowconfigure(1, weight = 1)
         treeview_content.grid_columnconfigure(2, weight = 1)
-        
-        #c = Canvas(compareRacersWindow, width=154, height=154)
-        #c.grid(row=3, column=0)
-        #c.create_arc((2,2,152,152), fill="#FAF402", outline="#FAF402", start=1, extent = 200)
-        #c.create_arc((2,2,152,152), fill="#2BFFF4", outline="#2BFFF4", start=200, extent = 400)
-        #c.create_arc((2,2,152,152), fill="#E00022", outline="#E00022", start=600, extent = 50)
-        #c.create_arc((2,2,152,152), fill="#7A0871", outline="#7A0871", start=650, extent = 200)
-        #c.create_arc((2,2,152,152), fill="#294994", outline="#294994", start=850, extent = 150)
-        
-         # now to get the total number of failed in each section
-        #actualFigure = plt.figure(figsize = (10,10))
-        #actualFigure.suptitle("Fruit Stats", fontsize = 22)
-        #win = [1, 2, 5, 10]
-        #plt.pie(win, shadow=True, autopct='%1.1f%%')
-
-        #canvas = FigureCanvasTkAgg(actualFigure, master=compareRacersWindow)
-        #canvas.draw()
-        #canvas.get_tk_widget().grid(row=3, column=0)

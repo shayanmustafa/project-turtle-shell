@@ -4,7 +4,13 @@ from tkinter import ttk
 import sqlite3
 
 #path = 'c:/users/shaya/turtle-shell.db'
-path = 'd:/project-turtle-shell/store.db'
+path = 'store.db'
+
+conn = sqlite3.connect(path)
+cursor = conn.cursor()
+cursor.execute('CREATE TABLE IF NOT EXISTS racer (racer_id INTEGER PRIMARY KEY UNIQUE, first_name CHAR, last_name CHAR, racing_name CHAR UNIQUE, age INTEGER, country CHAR, team CHAR, league CHAR)')
+cursor.execute('CREATE TABLE IF NOT EXISTS racer_statistics (racer_id INTEGER, first_name CHAR, last_name CHAR, racing_name CHAR, race_num INTEGER, placement CHAR, num_of_racers INTEGER, league CHAR, racetrack CHAR)')
+cursor.execute('CREATE TABLE IF NOT EXISTS racetrack (racetrack_id INTEGER PRIMARY KEY, racetrack_name CHAR, lap INTEGER, racetrack_cup CHAR)')
 
 # function to open a new window  
 # on a button click 
@@ -36,7 +42,7 @@ class ShowStatistics:
         #Creating a cursor object using the cursor() method
         cursor = conn.cursor()
         
-        select_placement_query = 'SELECT placement from racer_statistics where racer_id = ?'
+        select_placement_query = 'SELECT placement from racer_statistics where racer_id = ? ORDER BY race_num DESC LIMIT 15'
         select_first_name_query = 'SELECT DISTINCT first_name from racer_statistics where racer_id = ?'
         select_last_name_query = 'SELECT DISTINCT last_name from racer_statistics where racer_id = ?'
         select_racing_name_query = 'SELECT DISTINCT racing_name from racer_statistics where racer_id = ?'
@@ -74,9 +80,9 @@ class ShowStatistics:
         
         for row_id in rows_id:
             cursor.execute(select_placement_query, row_id)
-            placement_rows = cursor.fetchall()
+            placement_rows = cursor.fetchmany(15)
             racer_placement.append(placement_rows)
-        #print(racer_placement)
+        print(placement_rows)
         
         racer_league_name = []
         for row_id in rows_id:
@@ -88,8 +94,8 @@ class ShowStatistics:
         table_frame = ttk.Frame(content, borderwidth=6, relief='sunken')
         table_frame.grid(column=0, row=0, sticky=(N+S, E+W), padx=20, pady=20)
         self.tv = Treeview(table_frame, show='headings', selectmode='browse')
-        self.tv['columns'] = ('First Name', 'Last Name', 'Racing Name', '1', '2', '3', '4', '5', '6', '7', '8',
-                              '9', '10', '11', '12', '13', '14', '15', 'League')
+        self.tv['columns'] = ('First Name', 'Last Name', 'Racing Name', '15', '14', '13', '12', '11', '10', '9', '8',
+                              '7', '6', '5', '4', '3', '2', '1', 'League')
         self.tv.heading('First Name', text='First Name')
         self.tv.column('First Name', anchor='center', width=120)
         self.tv.heading('Last Name', text='Last Name')

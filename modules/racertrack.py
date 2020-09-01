@@ -4,7 +4,13 @@ from tkinter import ttk
 import sqlite3
 
 #path = 'c:/users/shaya/turtle-shell.db'
-path = 'd:/project-turtle-shell/store.db'
+path = 'store.db'
+
+conn = sqlite3.connect(path)
+cursor = conn.cursor()
+cursor.execute('CREATE TABLE IF NOT EXISTS racer (racer_id INTEGER PRIMARY KEY UNIQUE, first_name CHAR, last_name CHAR, racing_name CHAR UNIQUE, age INTEGER, country CHAR, team CHAR, league CHAR)')
+cursor.execute('CREATE TABLE IF NOT EXISTS racer_statistics (racer_id INTEGER, first_name CHAR, last_name CHAR, racing_name CHAR, race_num INTEGER, placement CHAR, num_of_racers INTEGER, league CHAR, racetrack CHAR)')
+cursor.execute('CREATE TABLE IF NOT EXISTS racetrack (racetrack_id INTEGER PRIMARY KEY, racetrack_name CHAR, lap INTEGER, racetrack_cup CHAR)')
 # function to open a new window  
 # on a button click 
 

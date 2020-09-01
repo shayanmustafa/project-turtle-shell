@@ -5,7 +5,13 @@ from tkinter import ttk
 import sqlite3
 
 #path = 'c:/users/shaya/turtle-shell.db'
-path = 'd:/project-turtle-shell/store.db'
+path = 'store.db'
+
+conn = sqlite3.connect(path)
+cursor = conn.cursor()
+cursor.execute('CREATE TABLE IF NOT EXISTS racer (racer_id INTEGER PRIMARY KEY UNIQUE, first_name CHAR, last_name CHAR, racing_name CHAR UNIQUE, age INTEGER, country CHAR, team CHAR, league CHAR)')
+cursor.execute('CREATE TABLE IF NOT EXISTS racer_statistics (racer_id INTEGER, first_name CHAR, last_name CHAR, racing_name CHAR, race_num INTEGER, placement CHAR, num_of_racers INTEGER, league CHAR, racetrack CHAR)')
+cursor.execute('CREATE TABLE IF NOT EXISTS racetrack (racetrack_id INTEGER PRIMARY KEY, racetrack_name CHAR, lap INTEGER, racetrack_cup CHAR)')
 
 # function to open a new window  
 # on a button click
@@ -16,6 +22,7 @@ class RacerStatistics:
         #self.edit_form_content.grid_remove()
         selected_items = []
         selected_items = self.tv.selection()
+        #self.race_number_val.set(self.race_num_values[0])
         if not selected_items:
             messagebox.showinfo(title="Select Racer", message="Please first select one of the racers from the list to add statistics.", parent=self.enterRacerStatisticsWindow)
             self.form_content.grid_remove()
@@ -34,12 +41,14 @@ class RacerStatistics:
                     
     def showEditForm(self):
         #Edit Form 
-        
+        self.edit_form_content = ttk.Frame(self.enterRacerStatisticsWindow, borderwidth=6, relief='sunken')
         selected_rows = []
         selected_rows = self.tv_stats.selection()
         if not selected_rows:
+            self.edit_form_content.grid_remove()
             messagebox.showinfo(title="Select Editable Row", message="Please first select one of the rows from the list to edit statistics.", parent=self.enterRacerStatisticsWindow)
         else:
+            self.edit_form_content.grid(column=0, row=3, sticky=(N+S, E+W), padx=20, pady=20)
             items_race_num = []     
             for selected_row in selected_rows:          
                 items_race_num.append(self.tv_stats.item(selected_row)['values'][4])
@@ -66,49 +75,49 @@ class RacerStatistics:
             racetrack_entry = items_racetrack[0]
             self.racingname = items_racing_name[0]
         
-        self.edit_form_content = ttk.Frame(self.enterRacerStatisticsWindow, borderwidth=6, relief='sunken')
-        self.edit_form_content.grid(column=0, row=3, sticky=(N+S, E+W), padx=20, pady=20)
-        self.edit_form_content.columnconfigure(0, weight=1)
-        self.edit_form_content.columnconfigure(1, weight=1)
-        self.edit_form_content.columnconfigure(2, weight=1)
-        self.edit_form_content.columnconfigure(3, weight=1)
-        self.edit_form_content.rowconfigure(0, weight=2)
-        self.edit_form_content.rowconfigure(1, weight=2)
-        self.edit_form_content.rowconfigure(2, weight=2)
-        self.edit_form_content.rowconfigure(3, weight=2)
+        #self.edit_form_content = ttk.Frame(self.enterRacerStatisticsWindow, borderwidth=6, relief='sunken')
+        #self.edit_form_content.grid(column=0, row=3, sticky=(N+S, E+W), padx=20, pady=20)
+            self.edit_form_content.columnconfigure(0, weight=1)
+            self.edit_form_content.columnconfigure(1, weight=1)
+            self.edit_form_content.columnconfigure(2, weight=1)
+            self.edit_form_content.columnconfigure(3, weight=1)
+            self.edit_form_content.rowconfigure(0, weight=2)
+            self.edit_form_content.rowconfigure(1, weight=2)
+            self.edit_form_content.rowconfigure(2, weight=2)
+            self.edit_form_content.rowconfigure(3, weight=2)
         
-        # A Label widget to show in toplevel 
-        Label(self.edit_form_content, text ="Race Number").grid(row=0,column=0, sticky=(N, W, E, S), padx=15)
-        self.edit_race_number_val = StringVar()
-        self.edit_race_number = Entry(self.edit_form_content, textvariable=self.edit_race_number_val, state=DISABLED)
-        self.edit_race_number_val.set(self.race_num_entry)
-        self.edit_race_number.grid(row=1,column=0,columnspan=1, sticky=(E+W), padx=15)
+            # A Label widget to show in toplevel 
+            Label(self.edit_form_content, text ="Race Number").grid(row=0,column=0, sticky=(N, W, E, S), padx=15)
+            self.edit_race_number_val = StringVar()
+            self.edit_race_number = Entry(self.edit_form_content, textvariable=self.edit_race_number_val, state=DISABLED)
+            self.edit_race_number_val.set(self.race_num_entry)
+            self.edit_race_number.grid(row=1,column=0,columnspan=1, sticky=(E+W), padx=15)
 
-        Label(self.edit_form_content, text ="Placement").grid(row=0,column=1, sticky=(N, W, E, S), padx=15)
-        self.edit_placement_val = StringVar()
-        self.edit_placement = Entry(self.edit_form_content, textvariable=self.edit_placement_val)
-        self.edit_placement.grid(row=1,column=1,columnspan=1, sticky=(E+W), padx=15)
+            Label(self.edit_form_content, text ="Placement").grid(row=0,column=1, sticky=(N, W, E, S), padx=15)
+            self.edit_placement_val = StringVar()
+            self.edit_placement = Entry(self.edit_form_content, textvariable=self.edit_placement_val)
+            self.edit_placement.grid(row=1,column=1,columnspan=1, sticky=(E+W), padx=15)
 
-        Label(self.edit_form_content, text="Number of Racers").grid(row=0,column=2, sticky=(N, W, E, S), padx=15)
-        self.edit_num_racers_val = StringVar()
-        self.edit_num_racers = Entry(self.edit_form_content, textvariable=self.edit_num_racers_val, state=DISABLED)
-        self.edit_num_racers_val.set(num_racers_entry)
-        self.edit_num_racers.grid(row=1,column=2,columnspan=1, sticky=(E+W), padx=15)
+            Label(self.edit_form_content, text="Number of Racers").grid(row=0,column=2, sticky=(N, W, E, S), padx=15)
+            self.edit_num_racers_val = StringVar()
+            self.edit_num_racers = Entry(self.edit_form_content, textvariable=self.edit_num_racers_val, state=DISABLED)
+            self.edit_num_racers_val.set(num_racers_entry)
+            self.edit_num_racers.grid(row=1,column=2,columnspan=1, sticky=(E+W), padx=15)
 
-        Label(self.edit_form_content, text="League").grid(row=0,column=3, sticky=(N, W, E, S), padx=15)
-        self.edit_league_val = StringVar()
-        self.edit_league = Entry(self.edit_form_content, textvariable=self.edit_league_val, state=DISABLED)
-        self.edit_league_val.set(league_entry)
-        self.edit_league.grid(row=1,column=3,columnspan=1, sticky=(E+W), padx=15)
+            Label(self.edit_form_content, text="League").grid(row=0,column=3, sticky=(N, W, E, S), padx=15)
+            self.edit_league_val = StringVar()
+            self.edit_league = Entry(self.edit_form_content, textvariable=self.edit_league_val, state=DISABLED)
+            self.edit_league_val.set(league_entry)
+            self.edit_league.grid(row=1,column=3,columnspan=1, sticky=(E+W), padx=15)
 
-        Label(self.edit_form_content, text="Racetrack").grid(row=3,column=0, sticky=(N, W, E, S), padx=15)
-        self.edit_racetrack_val = StringVar()
-        self.edit_racetrack = Entry(self.edit_form_content, textvariable=self.edit_racetrack_val, state=DISABLED)
-        self.edit_racetrack_val.set(racetrack_entry)
-        self.edit_racetrack.grid(row=4,column=0,columnspan=1, sticky=(E+W), padx=15)
-        
-        btnEdit = Button(self.edit_form_content, text = "Edit", style = 'W.TButton', command=self.editPlacement)
-        btnEdit.grid(row = 4, column = 1, pady = 0, padx = 50)
+            Label(self.edit_form_content, text="Racetrack").grid(row=3,column=0, sticky=(N, W, E, S), padx=15)
+            self.edit_racetrack_val = StringVar()
+            self.edit_racetrack = Entry(self.edit_form_content, textvariable=self.edit_racetrack_val, state=DISABLED)
+            self.edit_racetrack_val.set(racetrack_entry)
+            self.edit_racetrack.grid(row=4,column=0,columnspan=1, sticky=(E+W), padx=15)
+
+            btnEdit = Button(self.edit_form_content, text = "Edit", style = 'W.TButton', command=self.editPlacement)
+            btnEdit.grid(row = 4, column = 1, pady = 0, padx = 50)
         
     def showEditableRows(self):
         #self.edit_form_content.grid(column=0, row=3, sticky=(N+S, E+W), padx=20, pady=20)
@@ -199,27 +208,38 @@ class RacerStatistics:
         race_id = self.id_to_enter[0]
         first_name = self.first_name_to_enter[0]
         last_name = self.last_name_to_enter[0]
-        racing_name = self.racing_name_to_enter[0]
+        self.racing_name = self.racing_name_to_enter[0]
         race_num = self.race_number_val.get()
         placement = self.placement_val.get()
         num_of_racers = self.num_racers_val.get()
         #league = self.league_val.get()
         racetrack = self.racetrack_val.get()
         
-        cursor.execute("SELECT DISTINCT league FROM racer WHERE racing_name = ?", (racing_name,))
+        cursor.execute("SELECT DISTINCT league FROM racer WHERE racing_name = ?", (self.racing_name,))
         league_row = cursor.fetchall()
         league_values = [x for tup in league_row for x in tup]
         print(league_values[0])
         
+        #cursor.execute("SELECT DISTINCT race_num FROM racer_statistics WHERE racing_name = ?", (self.racing_name,))
+        #race_num_row = cursor.fetchall()
+        #self.race_num_values = [x for tup in race_num_row for x in tup]
+        #print(self.race_num_values[0])
+        empty = 0
+        #print(int(self.race_number_val.get()))
+        if race_num == '' and self.placement_val.get() == '' and self.num_racers_val.get() == '' and self.racetrack_val.get() == '':
+            empty = 1
         cursor.execute("SELECT race_num, placement, league FROM racer_statistics")
         self.rows = cursor.fetchall()
-        for row in self.rows:
-            if (row[0] == int(self.race_number_val.get()) and row[1] == self.placement_val.get() and row[2] == league_values[0]):
-                messagebox.showinfo(title="Select Racer", message="Please first select one of the racers from the list to edit statistics.", parent=self.enterRacerStatisticsWindow)
-                exists = 1
-                break
-        if exists == 0:
-            cursor.execute(insert_query, (race_id, first_name, last_name, racing_name, race_num, placement,
+        if empty == 0:
+            for row in self.rows:
+                if (row[0] == int(self.race_number_val.get()) and row[1] == self.placement_val.get() and row[2] == league_values[0]):
+                    messagebox.showinfo(title="Already Exists", message="A racer has already been placed at the same placement and in the same racer number.", parent=self.enterRacerStatisticsWindow)
+                    exists = 1
+                    break
+        if empty == 1:
+            messagebox.showinfo(title="Input Error", message="Any statistic about the racer cannot be empty.", parent=self.enterRacerStatisticsWindow)
+        elif exists == 0 and empty == 0:
+            cursor.execute(insert_query, (race_id, first_name, last_name, self.racing_name, race_num, placement,
                                           num_of_racers, league_values[0], racetrack))
             conn.commit()
         
@@ -309,10 +329,16 @@ class RacerStatistics:
         self.form_content.rowconfigure(2, weight=2)
         self.form_content.rowconfigure(3, weight=2)
         
+        #cursor.execute("SELECT DISTINCT race_num FROM racer_statistics WHERE racing_name = ?", (self.racing_name,))
+        #race_num_row = cursor.fetchall()
+        #self.race_num_values = [x for tup in race_num_row for x in tup]
+        #print(self.race_num_values[0])
+        
         # A Label widget to show in toplevel 
         Label(self.form_content, text ="Race Number").grid(row=0,column=0, sticky=(N, W, E, S), padx=15)
         self.race_number_val = StringVar()
         self.race_number = Entry(self.form_content, textvariable=self.race_number_val)
+        #self.race_number_val.set(self.race_num_values[0])
         self.race_number.grid(row=1,column=0,columnspan=1, sticky=(E+W), padx=15)
 
         Label(self.form_content, text ="Placement").grid(row=0,column=1, sticky=(N, W, E, S), padx=15)

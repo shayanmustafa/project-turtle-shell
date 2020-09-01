@@ -10,6 +10,7 @@ pylint = "*"
 matplotlib = "*"
 pyinstaller = "*"
 auto-py-to-exe = "*"
+py2exe = "*"
 
 [requires]
 python_version = "3.7"

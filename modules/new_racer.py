@@ -6,9 +6,100 @@ from tkinter import Tk, Button, font
 import sqlite3
 
 #path = 'c:/users/shaya/turtle-shell.db'
-path = 'd:/project-turtle-shell/store.db'
+path = 'store.db'
+
+conn = sqlite3.connect(path)
+cursor = conn.cursor()
+cursor.execute('CREATE TABLE IF NOT EXISTS racer (racer_id INTEGER PRIMARY KEY UNIQUE, first_name CHAR, last_name CHAR, racing_name CHAR UNIQUE, age INTEGER, country CHAR, team CHAR, league CHAR)')
+cursor.execute('CREATE TABLE IF NOT EXISTS racer_statistics (racer_id INTEGER, first_name CHAR, last_name CHAR, racing_name CHAR, race_num INTEGER, placement CHAR, num_of_racers INTEGER, league CHAR, racetrack CHAR)')
+cursor.execute('CREATE TABLE IF NOT EXISTS racetrack (racetrack_id INTEGER PRIMARY KEY, racetrack_name CHAR, lap INTEGER, racetrack_cup CHAR)')
 
 class EnterRacer:
+    def editRacer(self):
+        empty = 0
+        if self.first_name_val.get() == '' or self.last_name_val.get() == '' or self.racing_name_val.get() == '' or self.age_val.get() == '' or self.country_val.get() == '' or self.team_val.get() == '' or self.league_val.get() == '':
+            empty = 1
+        if empty == 1:
+            messagebox.showinfo(title="Input Error", message="Any information about the racer cannot be empty", parent=self.racerWindow)
+        elif empty == 0:
+            #cursor.execute('DELETE FROM racer WHERE racing_name = ?'(self.racing_name_entry,))
+            self.tv.delete(self.selected_rows)
+            add_for_edit_query = 'INSERT INTO racer (first_name, last_name, racing_name, age, country, team, league) VALUES(?, ?, ?, ?, ?, ?, ?)'
+            delete_for_edit_query = 'DELETE FROM racer WHERE racing_name = ?'
+            cursor.execute(delete_for_edit_query, (self.racing_name_entry,))
+            conn.commit()
+            cursor.execute(add_for_edit_query, (self.first_name_val.get(), self.last_name_val.get(), self.racing_name_val.get(),
+                            self.age_val.get(), self.country_val.get(), self.team_val.get(), self.league_val.get()))
+            last_row_id = cursor.lastrowid
+            conn.commit()
+        
+            cursor.execute("SELECT first_name, last_name, racing_name, age, country, team, league FROM racer WHERE racer_id = " + str(last_row_id))
+            self.new_rows = cursor.fetchall()
+            for row in self.new_rows:
+                self.tv.insert("", "end", text="0", values=row)
+                
+            self.first_name.delete(0, "end")
+            self.last_name.delete(0, "end")
+            self.racing_name.delete(0, "end")
+            self.age.delete(0, "end")
+            self.country.delete(0, "end")
+            self.team.delete(0, "end")
+            self.league.delete(0, "end")
+            #conn.close()
+            
+    def editSelectedRow(self):
+        self.selected = 0
+        self.selected_rows = []
+        self.selected_rows = self.tv.selection()
+        if not self.selected_rows:
+            #self.edit_form_content.grid_remove()
+            messagebox.showinfo(title="Select Editable Row", message="Please first select one of the rows from the list to edit racer information.", parent=self.racerWindow)
+        else:
+            self.selected = 1
+            #self.edit_form_content.grid(column=0, row=3, sticky=(N+S, E+W), padx=20, pady=20)
+            items_first_name = []     
+            for selected_row in self.selected_rows:          
+                items_first_name.append(self.tv.item(selected_row)['values'][0])
+            
+            items_last_name = []
+            for selected_row in self.selected_rows:          
+                items_last_name.append(self.tv.item(selected_row)['values'][1])
+                
+            items_racing_name = []
+            for selected_row in self.selected_rows:          
+                items_racing_name.append(self.tv.item(selected_row)['values'][2])
+                
+            items_age = []
+            for selected_row in self.selected_rows:          
+                items_age.append(self.tv.item(selected_row)['values'][3])
+                
+            items_country = []
+            for selected_row in self.selected_rows:          
+                items_country.append(self.tv.item(selected_row)['values'][4])
+            
+            items_team = []
+            for selected_row in self.selected_rows:          
+                items_team.append(self.tv.item(selected_row)['values'][5])
+            
+            items_league = []
+            for selected_row in self.selected_rows:          
+                items_league.append(self.tv.item(selected_row)['values'][6])
+                
+            self.first_name_entry = items_first_name[0]
+            self.last_name_entry = items_last_name[0]
+            self.racing_name_entry = items_racing_name[0]
+            self.age_entry = items_age[0]
+            self.country_entry = items_country[0]
+            self.team_entry = items_team[0]
+            self.league_entry = items_league[0]
+            
+            self.first_name_val.set(self.first_name_entry)
+            self.last_name_val.set(self.last_name_entry)
+            self.racing_name_val.set(self.racing_name_entry)
+            self.age_val.set(self.age_entry)
+            self.country_val.set(self.country_entry)
+            self.team_val.set(self.team_entry)
+            self.league_val.set(self.league_entry)
     
     def addRacerIntoDb(self):
         exists = 0
@@ -107,8 +198,10 @@ class EnterRacer:
             self.tv.delete(selected_item)
             tuple(items_to_delete)
             delete_query = 'DELETE FROM racer WHERE racing_name=?'
+            delete_stats_query = 'DELETE FROM racer_statistics WHERE racing_name=?'
             cur = conn.cursor()
             cur.execute(delete_query, (items_to_delete))
+            cur.execute(delete_stats_query, (items_to_delete))
             conn.commit()
         conn.close()
         
@@ -191,6 +284,14 @@ class EnterRacer:
         # delete racer row
         btnAdd = Button(form_content, text = "Delete", command=self.deleteRacer)
         btnAdd.grid(row = 5, column = 1, pady = 20, padx = 20, sticky=(E+W))
+        
+        # edit selected row
+        btnAdd = Button(form_content, text = "Edit Selected Row", command=self.editSelectedRow)
+        btnAdd.grid(row = 5, column = 2, pady = 20, padx = 20, sticky=(E+W))
+        
+        # edit racer
+        btnAdd = Button(form_content, text = "Edit Racer", command=self.editRacer)
+        btnAdd.grid(row = 5, column = 3, pady = 20, padx = 20, sticky=(E+W))
         
         table_frame = ttk.Frame(content, borderwidth=6, relief='sunken')
         table_frame.grid(column=0, row=1, sticky=(N+S, E+W), padx=20, pady=20)
